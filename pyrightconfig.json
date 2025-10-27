@@ -1,0 +1,22 @@
+{
+    "pythonVersion": "3.10",
+    "pythonPlatform": "Windows",
+    "include": [
+        "src",
+        "examples"
+    ],
+    "executionEnvironments": [
+        {
+            "root": ".",
+            "pythonVersion": "3.10",
+            "pythonPlatform": "Windows",
+            "extraPaths": [
+                "C:\\Users\\HAI\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages"
+            ]
+        }
+    ],
+    "typeCheckingMode": "basic",
+    "useLibraryCodeForTypes": true,
+    "reportMissingImports": "warning",
+    "reportMissingTypeStubs": false
+}
