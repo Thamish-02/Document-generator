@@ -1,9 +1,14 @@
-body {
-  font-family: Arial, sans-serif;
-  background: #f5f7fa;
-  padding: 30px;
-  text-align: center;
-}
+body { font-family: Inter, Arial, sans-serif; background:#f4f7fb; margin:0; padding:20px; }
+.container { max-width:1000px; margin: 0 auto; }
+h1 { margin-bottom: 12px; color:#222; }
+.card { background:white; padding:18px; margin:14px 0; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.06); }
+input[type="file"] { display:inline-block; margin-right:12px; }
+button { background:#0b6efd; color:white; border:none; padding:8px 14px; border-radius:6px; cursor:pointer; }
+button:hover { opacity:0.95; }
+.doc { white-space: pre-wrap; background:#fff; padding:14px; border-radius:8px; border:1px solid #eee; max-height:520px; overflow:auto; }
+.download-btn { background:#22c55e; color:white; padding:8px 12px; border-radius:6px; text-decoration:none; margin-bottom:8px; display:inline-block; }
+.flash { background:#fff7cc; padding:10px; border-radius:8px; margin:10px 0; color:#5a4b00; }
+footer { margin-top:18px; color:#666; font-size:13px; }
 
 form {
   margin: 20px 0;
