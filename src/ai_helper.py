@@ -1,24 +1,39 @@
 import os
 from openai import OpenAI
 
-# Initialize client using OpenRouter endpoint
-client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("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")  # Store your key as environment variable
-)
+# Try OpenRouter first
+OPENROUTER_KEY = os.getenv("OPENROUTER_API_KEY")
+OPENAI_KEY = os.getenv("OPENAI_API_KEY")
 
-def summarize_code(code_snippet):
-    """Summarize or explain code using OpenRouter AI model."""
+if OPENROUTER_KEY:
+    client = OpenAI(
+        api_key=OPENROUTER_KEY,
+        base_url="https://openrouter.ai/api/v1",
+        default_headers={
+            "HTTP-Referer": "https://github.com/HarveyHunt/docgen",  # Optional, for including your app on openrouter.ai rankings
+            "X-Title": "DocGen"  # Optional, shows in rankings on openrouter.ai
+        }
+    )
+    MODEL_NAME = "gpt-4o-mini"
+elif OPENAI_KEY:
+    client = OpenAI(api_key=OPENAI_KEY)
+    MODEL_NAME = "gpt-4o-mini"
+else:
+    raise ValueError("❌ No API key found! Set either OPENROUTER_API_KEY or OPENAI_API_KEY.")
+
+def summarize_code(code: str) -> str:
+    """Send code to AI model and get a summary."""
     try:
-        prompt = f"Explain this Python code in simple technical terms:\n\n{code_snippet}"
-        
+        prompt = f"Summarize the following Python code in simple terms:\n\n{code}"
+
         response = client.chat.completions.create(
-            model="gpt-4o-mini",  # you can switch to 'mistralai/mistral-7b' or 'meta-llama/llama-3-8b-instruct'
+            model=MODEL_NAME,
             messages=[{"role": "user", "content": prompt}],
+            max_tokens=250
         )
 
         content = response.choices[0].message.content
-        return content.strip() if content else ""
+        return content.strip() if content else "No summary generated."
+
     except Exception as e:
-        print(f"Error generating AI summary: {e}")
-        return "AI summary could not be generated due to an error."
+        return f"AI summary could not be generated due to an error: {e}"

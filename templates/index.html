@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Code Documentation Generator</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <h1>🧠 AI Code Documentation Generator</h1>
+  <form method="POST" enctype="multipart/form-data">
+    <input type="file" name="file" accept=".py,.ipynb,.md" required>
+    <button type="submit">Generate Documentation</button>
+  </form>
+
+  {% if generated_doc %}
+  <h2>📄 Generated Documentation:</h2>
+  <pre>{{ generated_doc }}</pre>
+  {% endif %}
+</body>
+</html>
