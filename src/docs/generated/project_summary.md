@@ -3,36 +3,34 @@
 This document provides a high-level overview of the project located in `examples`.
 
 ## 📄 example_script.py
-This Python code is designed to work with numerical data, primarily using a class to perform calculations on a list of numbers. Here's a simple breakdown:
+This Python code creates a program to work with a list of numbers. Here's a simple breakdown:
 
-1. **DataProcessor Class**: This class is for managing a list of numbers. It has methods to:
-   - Initialize the class with a list of numbers.
-   - Calculate the average (mean) of those numbers.
-   - Find the largest number in the list.
+1. **DataProcessor Class**: This class helps manage a list of numbers.
+   - **Initialization**: When you create a `DataProcessor`, you give it a list of numbers.
+   - **Mean Calculation**: It can calculate the average (mean) of those numbers.
+   - **Maximum Value**: It can also find the largest number in the list.
 
-2. **File Processing**: There’s a function called `process_file` that:
-   - Reads numbers from a specified text file.
-   - Turns the file's contents into a list of numbers.
-   - Uses the `DataProcessor` class to compute the average, maximum value, and count of the numbers.
-   - Returns the results in a dictionary. It also handles errors like missing files or wrong data formats by returning an empty dictionary.
+2. **File Processing Function**: The `process_file` function reads numbers from a specified file.
+   - It takes the filename as input, reads the file line by line, and converts each line into a float.
+   - It uses the numbers read from the file to create a `DataProcessor` instance and returns a dictionary containing the mean, maximum value, and the total count of numbers.
+   - It also handles errors if the file is missing or has bad data, displaying appropriate messages.
 
-3. **Example Usage**: At the end of the code, there’s an example that shows how to use the `DataProcessor` class with a sample list of numbers, displaying the mean and maximum values.
-
-In summary, this script processes numerical data from a file and makes it easy to calculate statistics like the mean and maximum.
+3. **Usage Example**: The script includes a section that shows how to use the `DataProcessor` with a sample list of numbers and prints the results.
 
 ## 📄 test1.py
-This Python code defines a simple program that demonstrates basic functionality for generating documentation. Here’s a breakdown:
+This Python code is a simple script that showcases how to create functions and a class for basic arithmetic operations. Here’s a breakdown of its components:
 
-1. **Greeting Function**: It has a function called `hello_world` that simply returns the text "Hello, World!" when executed.
+1. **Functions**:
+   - `hello_world()`: Returns the greeting "Hello, World!".
+   - `add_numbers(a, b)`: Takes two integers, adds them together, and returns the sum.
 
-2. **Addition Function**: There's another function, `add_numbers`, which takes two integers and returns their sum.
+2. **Calculator Class**:
+   - Contains an `__init__` method that sets up a list to track calculation history.
+   - `multiply(x, y)`: Multiplies two numbers, stores this operation in the history, and returns the result.
+   - `get_history()`: Returns the list of previous calculations.
 
-3. **Calculator Class**: This class is designed to perform basic arithmetic operations:
-   - It has a constructor method (`__init__`) that sets up the calculator and a history list to keep track of calculations.
-   - A method called `multiply` lets you multiply two numbers, records that operation in the history, and returns the result.
-   - A method named `get_history` retrieves and returns a list of all calculations performed.
+3. **Main Execution**:
+   - When the script is run, it prints the greeting, adds two numbers, and demonstrates the multiplication function while showing the calculation history.
 
-4. **Main Execution**: When the script is run, it greets the user, adds two numbers, performs multiplication, and displays the results along with the calculation history from the `Calculator` class. 
-
-Overall, the script showcases basic functions and object-oriented programming with a calculator implementation.
+In summary, the code focuses on defining basic arithmetic functions and includes a class to manage calculations and their history.
 
