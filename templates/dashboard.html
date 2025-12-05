@@ -1,60 +1,34 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8" />
-  <title>AI Code Documentation Generator — Dashboard</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <title>DocGen Dashboard</title>
 </head>
 <body>
-  <div class="container">
-    <h1>🧠 AI Code Documentation Generator</h1>
+  <h1>Code Documentation Generator</h1>
 
-    <!-- Upload single file -->
-    <section class="card">
-      <h2>Single File → Generate Documentation</h2>
-      <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" accept=".py,.ipynb,.md" required>
-        <button type="submit">Generate</button>
-      </form>
-    </section>
+  <!-- Upload + Generate form -->
+  <form action="{{ url_for('generate') }}" method="post" enctype="multipart/form-data">
+    <label>Select a file or project archive:</label><br>
+    <input type="file" name="file" required><br><br>
+    <button type="submit">Generate Documentation</button>
+  </form>
 
-    <!-- Folder / Project summary -->
-    <section class="card">
-      <h2>Project / Folder Summary</h2>
-      <form action="{{ url_for('folder_summary') }}" method="post" style="display:inline-block;">
-        <button type="submit">Generate Folder Summary</button>
-      </form>
+  <br>
 
-      <form action="{{ url_for('project_summary') }}" method="post" style="display:inline-block; margin-left:12px;">
-        <button type="submit">Generate Project Summary</button>
-      </form>
-    </section>
+  <!-- Link to open the last generated PDF -->
+  <a href="{{ url_for('view_pdf') }}" target="_blank">
+    View Last Generated Documentation (PDF)
+  </a>
 
-    <!-- Flash messages -->
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <div class="flash">
-          {% for msg in messages %}
-            <div>{{ msg }}</div>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
-
-    <!-- Generated content -->
-    {% if generated_doc %}
-    <section class="card">
-      <h2>Generated: {{ generated_name }}</h2>
-      <div class="doc-actions">
-        <a class="download-btn" href="{{ url_for('download', filename=generated_name) }}">Download</a>
-      </div>
-      <pre class="doc">{{ generated_doc }}</pre>
-    </section>
+  <!-- Show flash messages -->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
     {% endif %}
-
-    <footer>
-      <small>Tip: Keep an eye on server logs when generating large projects — AI calls may take a few seconds.</small>
-    </footer>
-  </div>
+  {% endwith %}
 </body>
 </html>

@@ -1,0 +1,81 @@
+{
+  "test1.py_hello_world": {
+    "chunk": {
+      "id": "test1.py_hello_world",
+      "type": "function",
+      "name": "hello_world",
+      "args": [],
+      "docstring": "",
+      "source": "def hello_world():\n    return \"Hello, World!\""
+    },
+    "doc": {
+      "title": "Hello World Function",
+      "short_description": "Returns a simple greeting message.",
+      "long_description": "This function is a basic implementation that returns the classic \"Hello, World!\" greeting. It takes no parameters and always returns the same string. This is commonly used as a simple demonstration of a function's basic structure and return value.",
+      "example_usage": "greeting = hello_world()\nprint(greeting)  # Output: Hello, World!",
+      "edge_cases": [
+        "No edge cases - function always returns the same static string.",
+        "Function does not accept any parameters, so no type validation needed."
+      ],
+      "related": [
+        "print",
+        "str"
+      ],
+      "mermaid": ""
+    }
+  },
+  "test1.py_add_numbers": {
+    "chunk": {
+      "id": "test1.py_add_numbers",
+      "type": "function",
+      "name": "add_numbers",
+      "args": [
+        "a",
+        "b"
+      ],
+      "docstring": "",
+      "source": "def add_numbers(a, b):\n    return a + b"
+    },
+    "doc": {
+      "title": "Add Two Numbers",
+      "short_description": "Adds two numeric values and returns the result.",
+      "long_description": "This function accepts two arguments, `a` and `b`, and returns their sum. It assumes both inputs support the `+` operator. The function does not perform type validation, so non-numeric or incompatible types may raise a TypeError at runtime.",
+      "example_usage": "result = add_numbers(2, 3)\nprint(result)  # 5",
+      "edge_cases": [
+        "Passing non-numeric types like strings or lists will raise a TypeError.",
+        "Very large integers may still work, but floating-point addition can introduce rounding errors."
+      ],
+      "related": [
+        "subtract_numbers",
+        "Calculator"
+      ],
+      "mermaid": ""
+    }
+  },
+  "test1.py_Calculator": {
+    "chunk": {
+      "id": "test1.py_Calculator",
+      "type": "class",
+      "name": "Calculator",
+      "args": [],
+      "docstring": "",
+      "source": "class Calculator:\n    def __init__(self):\n        self.history = []\n    \n    def multiply(self, x, y):\n        result = x * y\n        self.history.append(f'{x} * {y} = {result}')\n        return result\n    \n    def get_history(self):\n        return self.history"
+    },
+    "doc": {
+      "title": "Calculator Class",
+      "short_description": "A simple calculator class for basic arithmetic operations with history tracking.",
+      "long_description": "This class provides basic arithmetic operations, specifically multiplication, with built-in history tracking. When initialized, it creates an empty history list. The multiply method performs multiplication of two numbers and records the operation in the history. The get_history method returns all recorded operations.",
+      "example_usage": "calc = Calculator()\nresult = calc.multiply(4, 5)\nprint(result)  # 20\nprint(calc.get_history())  # ['4 * 5 = 20']",
+      "edge_cases": [
+        "Multiplying very large numbers may lead to overflow in some systems.",
+        "Non-numeric inputs will raise a TypeError during multiplication.",
+        "History grows unbounded with each operation, which could consume significant memory over time."
+      ],
+      "related": [
+        "add_numbers",
+        "math"
+      ],
+      "mermaid": ""
+    }
+  }
+}

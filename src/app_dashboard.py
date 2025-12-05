@@ -1,120 +1,138 @@
 # src/app_dashboard.py
+"""
+Flask dashboard for DocGen.
+
+Flow:
+1. User opens /  -> upload form + buttons.
+2. User uploads a file and clicks "Generate Documentation".
+3. Backend saves file to uploads/, runs docgen_cli.py, and checks docs/documentation.pdf.
+4. On success, user can click "View PDF" to open the generated documentation.
+"""
+
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    send_from_directory,
+    flash,
+)
+from pathlib import Path
+import subprocess
 import os
-from flask import Flask, render_template, request, redirect, url_for, send_file, flash
-from werkzeug.utils import secure_filename
+import traceback
 
-# Import your existing modules (adjust names if your functions differ)
-from parser import parse_file          # expects parse_file(file_path) -> writes docs/generated/<name>.md
-from folder_summary import generate_folder_summary
-from project_summary import generate_project_summary
+app = Flask(__name__, template_folder='../templates')
+app.secret_key = "dev-secret-key"  # needed for flash()
 
-# Config
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
-DOCS_FOLDER = os.path.join(BASE_DIR, "docs", "generated")
-ALLOWED_EXTENSIONS = {".py", ".ipynb", ".md"}
+# Paths
+BASE_DIR = Path(__file__).resolve().parent.parent  # C:\Users\HAI\docgen
+UPLOADS_DIR = BASE_DIR / "uploads"
+DOCS_DIR = BASE_DIR / "docs"
 
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(DOCS_FOLDER, exist_ok=True)
+UPLOADS_DIR.mkdir(exist_ok=True)
+DOCS_DIR.mkdir(exist_ok=True)
 
-app = Flask(__name__, template_folder=os.path.join(BASE_DIR, "templates"), static_folder=os.path.join(BASE_DIR, "static"))
-app.secret_key = "change-this-secret"  # change to a secure random key for production
 
-def allowed_file(filename: str) -> bool:
-    _, ext = os.path.splitext(filename)
-    return ext.lower() in ALLOWED_EXTENSIONS
+# -----------------------
+# Routes
+# -----------------------
 
 @app.route("/", methods=["GET"])
 def index():
-    return render_template("dashboard.html", generated_doc=None, generated_name=None)
+    """
+    Main dashboard page.
 
-# ------------ Single-file upload and generate ------------
-@app.route("/upload", methods=["POST"])
-def upload():
-    if "file" not in request.files:
-        flash("No file part")
-        return redirect(url_for("index"))
+    NOTE: If your main template is index.html instead of dashboard.html,
+    change 'dashboard.html' to 'index.html' below.
+    """
+    return render_template("dashboard.html")
 
-    file = request.files["file"]
-    if file.filename == "":
-        flash("No selected file")
-        return redirect(url_for("index"))
 
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file_path = os.path.join(UPLOAD_FOLDER, filename)
-        file.save(file_path)
+@app.route("/generate", methods=["POST"])
+def generate():
+    """
+    Handle file upload + run DocGen pipeline.
 
-        # Call your existing parser to handle the file and produce markdown
-        try:
-            parse_file(file_path)  # should write docs/generated/<basename>.md
-        except Exception as e:
-            flash(f"Error parsing file: {e}")
+    Steps:
+    1) Save uploaded file into uploads/
+    2) Run `python docgen_cli.py` in BASE_DIR
+    3) Check docs/documentation.pdf exists
+    4) Redirect to view_pdf() or back to index() with an error message
+    """
+    try:
+        file = request.files.get("file")
+        if not file or not file.filename or file.filename.strip() == "":
+            flash("No file uploaded.")
             return redirect(url_for("index"))
 
-        md_name = os.path.splitext(filename)[0] + ".md"
-        md_path = os.path.join(DOCS_FOLDER, md_name)
-        if os.path.exists(md_path):
-            with open(md_path, "r", encoding="utf-8") as f:
-                content = f.read()
-            return render_template("dashboard.html", generated_doc=content, generated_name=md_name)
-        else:
-            flash("Generated file not found.")
+        # Save uploaded file
+        upload_path = UPLOADS_DIR / file.filename
+        file.save(upload_path)
+        app.logger.info(f"Saved upload to {upload_path}")
+
+        # Run DocGen pipeline (generator + renderer)
+        # If you want to use the uploaded file/folder as input later,
+        # you can pass it via env or CLI args to docgen_cli.py.
+        app.logger.info("Running docgen_cli.py ...")
+        result = subprocess.run(
+            ["python", "docgen_cli.py"],
+            cwd=BASE_DIR,
+            capture_output=True,
+            text=True,
+            encoding='utf-8',
+            errors='ignore'
+        )
+
+        app.logger.info("DocGen stdout:\n%s", result.stdout)
+        app.logger.info("DocGen stderr:\n%s", result.stderr)
+
+        if result.returncode != 0:
+            app.logger.error("DocGen failed with return code %s", result.returncode)
+            flash("Documentation generation failed. Check server logs for details.")
             return redirect(url_for("index"))
 
-    else:
-        flash("Unsupported file type.")
-        return redirect(url_for("index"))
+        # Check PDF
+        pdf_path = DOCS_DIR / "documentation.pdf"
+        if not pdf_path.exists():
+            flash("Documentation PDF was not created. Check pipeline.")
+            return redirect(url_for("index"))
 
-# ------------ Generate folder/project summary ------------
-@app.route("/generate_project_summary", methods=["POST"])
-def project_summary():
-    try:
-        # By default run project_summary on repo root or examples folder
-        # generate_project_summary should return the output file path OR we adjust below to find file
-        output_path = generate_project_summary(".") if generate_project_summary.__code__.co_argcount == 0 else generate_project_summary("examples")
-    except TypeError:
-        # fallback if signature expects a project_dir param
-        output_path = generate_project_summary("examples")
+        flash("Documentation generated successfully!")
+        return redirect(url_for("view_pdf"))
 
-    if not output_path:
-        # if your function writes to docs/generated/project_summary.md, build the path
-        output_path = os.path.join(DOCS_FOLDER, "project_summary.md")
-
-    if os.path.exists(output_path):
-        with open(output_path, "r", encoding="utf-8") as f:
-            content = f.read()
-        return render_template("dashboard.html", generated_doc=content, generated_name=os.path.basename(output_path))
-    else:
-        flash("Project summary not found. Check server logs.")
-        return redirect(url_for("index"))
-
-# ------------ Generate folder summary for examples folder ------------
-@app.route("/generate_folder_summary", methods=["POST"])
-def folder_summary():
-    try:
-        output_path = generate_folder_summary("examples")
     except Exception as e:
-        flash(f"Folder summary error: {e}")
+        # Do NOT let the server crash; log and show a friendly message
+        app.logger.error("Error in /generate: %s\n%s", e, traceback.format_exc())
+        flash(f"Unexpected error while generating docs: {e}")
         return redirect(url_for("index"))
 
-    if os.path.exists(output_path):
-        with open(output_path, "r", encoding="utf-8") as f:
-            content = f.read()
-        return render_template("dashboard.html", generated_doc=content, generated_name=os.path.basename(output_path))
-    else:
-        flash("Folder summary file not created.")
-        return redirect(url_for("index"))
 
-# ------------ Download a generated doc ------------
-@app.route("/download/<path:filename>", methods=["GET"])
-def download(filename):
-    safe_path = os.path.join(DOCS_FOLDER, secure_filename(filename))
-    if os.path.exists(safe_path):
-        return send_file(safe_path, as_attachment=True)
-    else:
-        flash("File not found.")
+@app.route("/docs/pdf")
+def view_pdf():
+    """
+    Serve the generated documentation PDF to the browser.
+    """
+    pdf_path = DOCS_DIR / "documentation.pdf"
+    if not pdf_path.exists():
+        flash("No documentation.pdf found yet. Generate documentation first.")
         return redirect(url_for("index"))
+    return send_from_directory(DOCS_DIR, "documentation.pdf")
+
+
+@app.route("/docs/<path:filename>")
+def serve_docs_file(filename):
+    """
+    (Optional) Serve any file inside docs/ (Markdown, etc.).
+    """
+    file_path = DOCS_DIR / filename
+    if not file_path.exists():
+        flash(f"File not found: {filename}")
+        return redirect(url_for("index"))
+    return send_from_directory(DOCS_DIR, filename)
+
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # debug=True will show errors in the browser if something goes wrong
+    app.run(host="127.0.0.1", port=5000, debug=True)
