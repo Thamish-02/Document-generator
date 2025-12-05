@@ -1,39 +1,29 @@
-import os
-from parser import parse_python  # ✅ correct function name
-from ai_helper import summarize_code
+# src/folder_summary.py
+"""
+Generate a high-level folder summary using the docs/ folder.
 
-def generate_folder_summary(folder_path="examples"):
-    """Generate documentation + AI summary for all Python files in a folder."""
-    combined_summary = ["# 📂 Project Summary\n"]
+Run:
+  python -m src.folder_summary
 
-    for root, _, files in os.walk(folder_path):
-        for file in files:
-            if file.endswith(".py"):
-                file_path = os.path.join(root, file)
-                print(f"🔍 Processing {file_path}...")
+Output:
+  docs/folder_summary.md
+"""
 
-                # ✅ Get documentation text from parser
-                doc_content = parse_python(file_path)
+from pathlib import Path
+from .high_level_summary import summarize_folder_docs
 
-                # ✅ Generate AI summary using the helper
-                ai_summary = summarize_code(doc_content)
+def main():
+    root = Path(".").resolve()
+    docs_dir = root / "docs"  # using the output docs folder
+    out_path = docs_dir / "folder_summary.md"
 
-                combined_summary.append(f"\n## 🧩 {file}\n")
-                combined_summary.append(ai_summary)
-                combined_summary.append(doc_content)
+    if not docs_dir.exists():
+        print(f"❌ docs/ folder not found at {docs_dir}. Run renderer.py or docgen_cli.py first.")
+        return
 
-    # ✅ Ensure output directory exists
-    output_dir = os.path.join("docs", "generated")
-    os.makedirs(output_dir, exist_ok=True)
-
-    # ✅ Save summary file
-    output_file = os.path.join(output_dir, "folder_summary.md")
-    with open(output_file, "w", encoding="utf-8") as f:
-        f.write("\n".join(combined_summary))
-
-    print(f"\n✅ Folder summary generated: {output_file}")
-    return output_file
-
+    print(f"📂 Creating folder summary from {docs_dir} ...")
+    summarize_folder_docs(docs_dir, out_path)
+    print(f"✅ Folder summary written to {out_path}")
 
 if __name__ == "__main__":
-    generate_folder_summary("examples")
+    main()

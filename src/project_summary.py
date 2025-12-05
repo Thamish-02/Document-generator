@@ -1,59 +1,29 @@
 # src/project_summary.py
-import os
-from ai_helper import summarize_code
-from parser import parse_python
+"""
+Generate a project-level summary using the docs/ folder.
 
-def collect_code_summaries(project_dir):
-    """Collect AI summaries for all Python files in a project."""
-    summaries = []
+Run:
+  python -m src.project_summary
 
-    for root, _, files in os.walk(project_dir):
-        for file in files:
-            if file.endswith(".py"):
-                file_path = os.path.join(root, file)
-                try:
-                    print(f"📄 Processing {file_path}...")
-                    parsed_text = parse_python(file_path)
-                    ai_summary = summarize_code(parsed_text)
+Output:
+  docs/project_summary.md
+"""
 
-                    summaries.append({
-                        "file": file,
-                        "summary": ai_summary
-                    })
-                except Exception as e:
-                    summaries.append({
-                        "file": file,
-                        "summary": f"⚠️ Error generating summary: {str(e)}"
-                    })
+from pathlib import Path
+from .high_level_summary import summarize_project_docs
 
-    return summaries
+def main():
+    root = Path(".").resolve()
+    docs_dir = root / "docs"
+    out_path = docs_dir / "project_summary.md"
 
+    if not docs_dir.exists():
+        print(f"❌ docs/ folder not found at {docs_dir}. Run renderer.py or docgen_cli.py first.")
+        return
 
-def generate_project_summary(project_dir):
-    """Generate one combined project-level summary."""
-    summaries = collect_code_summaries(project_dir)
-
-    header = "# 🧠 Project-Level Summary\n\n"
-    content = header
-    content += f"This document provides a high-level overview of the project located in `{project_dir}`.\n\n"
-
-    for s in summaries:
-        content += f"## 📄 {s['file']}\n{s['summary']}\n\n"
-
-    # Save the summary
-    # ✅ Create folders automatically
-    output_dir = os.path.join(os.path.dirname(__file__), "docs", "generated")
-    os.makedirs(output_dir, exist_ok=True)  # ✅ Create folders automatically
-    
-    output_file = os.path.join(output_dir, "project_summary.md")
-
-    with open(output_file, "w", encoding="utf-8") as f:
-        f.write(content)
-
-    print(f"\n✅ Project summary generated at: {output_file}")
-
+    print(f"📂 Creating project summary from {docs_dir} ...")
+    summarize_project_docs(docs_dir, out_path)
+    print(f"✅ Project summary written to {out_path}")
 
 if __name__ == "__main__":
-    # You can change this to your own project folder
-    project_dir = "examples/sample_project"
-    generate_project_summary(project_dir)
+    main()

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "test1.py_hello_world",
+    "type": "function",
+    "name": "hello_world",
+    "args": [],
+    "docstring": "",
+    "source": "def hello_world():\n    return \"Hello, World!\""
+  },
+  {
+    "id": "test1.py_add_numbers",
+    "type": "function",
+    "name": "add_numbers",
+    "args": ["a", "b"],
+    "docstring": "",
+    "source": "def add_numbers(a, b):\n    return a + b"
+  },
+  {
+    "id": "test1.py_Calculator",
+    "type": "class",
+    "name": "Calculator",
+    "args": [],
+    "docstring": "",
+    "source": "class Calculator:\n    def __init__(self):\n        self.history = []\n    \n    def multiply(self, x, y):\n        result = x * y\n        self.history.append(f'{x} * {y} = {result}')\n        return result\n    \n    def get_history(self):\n        return self.history"
+  }
+]

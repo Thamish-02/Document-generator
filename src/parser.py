@@ -3,7 +3,7 @@ import os
 import ast
 import nbformat
 from pathlib import Path
-from ai_helper import summarize_code
+from .ai_helper import summarize_code
 
 OUTPUT_DIR = "docs/generated"
 
@@ -14,8 +14,21 @@ def parse_python(file_path):
             content = f.read()
         
         # Generate AI summary of the code
-        ai_summary = summarize_code(content)
-        lines = ["## AI Summary\n", ai_summary, "\n"]
+        chunk = {
+            "id": file_path,
+            "type": "file",
+            "name": os.path.basename(file_path),
+            "args": [],
+            "docstring": "",
+            "source": content
+        }
+        ai_summary = summarize_code(chunk)
+        # Extract the summary text from the response
+        if "error" in ai_summary:
+            summary_text = f"Error generating AI summary: {ai_summary['error']}"
+        else:
+            summary_text = ai_summary.get("short_description", "No summary available.")
+        lines = ["## AI Summary\n", summary_text, "\n"]
         
         # Parse the AST to get proper function and class definitions
         try:
