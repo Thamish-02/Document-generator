@@ -1,0 +1,1 @@
+Encoding error: C:\Users\HAI\docgen\.venv\Lib\site-packages\IPython\core\tests\nonascii2.py

@@ -1,0 +1,74 @@
+## AI Summary
+
+A file named widget_datetime.py.
+
+
+## Class: DatetimePicker
+
+**Description:** Display a widget for picking datetimes.
+
+Parameters
+----------
+
+value: datetime.datetime
+    The current value of the widget.
+
+disabled: bool
+    Whether to disable user changes.
+
+min: datetime.datetime
+    The lower allowed datetime bound
+
+max: datetime.datetime
+    The upper allowed datetime bound
+
+Examples
+--------
+
+>>> import datetime
+>>> import ipydatetime
+>>> datetime_pick = ipydatetime.DatetimePicker()
+>>> datetime_pick.value = datetime.datetime(2018, 09, 5, 12, 34, 3)
+
+## Class: NaiveDatetimePicker
+
+**Description:** Display a widget for picking naive datetimes (i.e. timezone unaware).
+
+Parameters
+----------
+
+value: datetime.datetime
+    The current value of the widget.
+
+disabled: bool
+    Whether to disable user changes.
+
+min: datetime.datetime
+    The lower allowed datetime bound
+
+max: datetime.datetime
+    The upper allowed datetime bound
+
+Examples
+--------
+
+>>> import datetime
+>>> import ipydatetime
+>>> datetime_pick = ipydatetime.NaiveDatetimePicker()
+>>> datetime_pick.value = datetime.datetime(2018, 09, 5, 12, 34, 3)
+
+### Function: _validate_tz(self, value)
+
+### Function: _validate_value(self, proposal)
+
+**Description:** Cap and floor value
+
+### Function: _validate_min(self, proposal)
+
+**Description:** Enforce min <= value <= max
+
+### Function: _validate_max(self, proposal)
+
+**Description:** Enforce min <= value <= max
+
+### Function: _validate_tz(self, value)

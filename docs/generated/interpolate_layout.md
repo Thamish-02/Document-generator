@@ -1,0 +1,21 @@
+## AI Summary
+
+A file named interpolate_layout.py.
+
+
+### Function: interpolate_layout(designspace, loc, master_finder, mapped)
+
+**Description:** Interpolate GPOS from a designspace file and location.
+
+If master_finder is set, it should be a callable that takes master
+filename as found in designspace file and map it to master font
+binary as to be opened (eg. .ttf or .otf).
+
+If mapped is False (default), then location is mapped using the
+map element of the axes in designspace file.  If mapped is True,
+it is assumed that location is in designspace's internal space and
+no mapping is performed.
+
+### Function: main(args)
+
+**Description:** Interpolate GDEF/GPOS/GSUB tables for a point on a designspace
