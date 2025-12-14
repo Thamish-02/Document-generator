@@ -1,0 +1,32 @@
+## AI Summary
+
+A file named dir2.py.
+
+
+### Function: safe_hasattr(obj, attr)
+
+**Description:** In recent versions of Python, hasattr() only catches AttributeError.
+This catches all errors.
+
+### Function: dir2(obj)
+
+**Description:** dir2(obj) -> list of strings
+
+Extended version of the Python builtin dir(), which does a few extra
+checks.
+
+This version is guaranteed to return only a list of true strings, whereas
+dir() returns anything that objects inject into themselves, even if they
+are later not really valid for attribute access (many extension libraries
+have such bugs).
+
+### Function: get_real_method(obj, name)
+
+**Description:** Like getattr, but with a few extra sanity checks:
+
+- If obj is a class, ignore everything except class methods
+- Check if obj is a proxy that claims to have all attributes
+- Catch attribute access failing with any exception
+- Check that the attribute is a callable object
+
+Returns the method or None.

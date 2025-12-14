@@ -1,26 +1,10 @@
 [
   {
-    "id": "test1.py_hello_world",
-    "type": "function",
-    "name": "hello_world",
+    "id": "test_simple",
+    "type": "file",
+    "name": "test_simple",
     "args": [],
     "docstring": "",
-    "source": "def hello_world():\n    return \"Hello, World!\""
-  },
-  {
-    "id": "test1.py_add_numbers",
-    "type": "function",
-    "name": "add_numbers",
-    "args": ["a", "b"],
-    "docstring": "",
-    "source": "def add_numbers(a, b):\n    return a + b"
-  },
-  {
-    "id": "test1.py_Calculator",
-    "type": "class",
-    "name": "Calculator",
-    "args": [],
-    "docstring": "",
-    "source": "class Calculator:\n    def __init__(self):\n        self.history = []\n    \n    def multiply(self, x, y):\n        result = x * y\n        self.history.append(f'{x} * {y} = {result}')\n        return result\n    \n    def get_history(self):\n        return self.history"
+    "source": "## AI Summary\n\nA file named test_simple.py.\n\n\n### Function: hello_world()\n\n**Description:** Return a greeting message.\n\n### Function: add_numbers(a, b)\n\n**Description:** Add two numbers together.\n\n## Class: Calculator\n\n**Description:** A simple calculator class.\n\n### Function: __init__(self)\n\n### Function: multiply(self, x, y)\n\n**Description:** Multiply two numbers and store in history.\n\n### Function: get_history(self)\n\n**Description:** Return calculation history.\n"
   }
 ]

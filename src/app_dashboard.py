@@ -22,6 +22,7 @@ from pathlib import Path
 import subprocess
 import os
 import traceback
+import sys
 
 app = Flask(__name__, template_folder='../templates')
 app.secret_key = "dev-secret-key"  # needed for flash()
@@ -54,12 +55,13 @@ def index():
 def generate():
     """
     Handle file upload + run DocGen pipeline.
-
+    
     Steps:
     1) Save uploaded file into uploads/
-    2) Run `python docgen_cli.py` in BASE_DIR
-    3) Check docs/documentation.pdf exists
-    4) Redirect to view_pdf() or back to index() with an error message
+    2) Process the uploaded file to generate documentation
+    3) Run generator.py to produce ai_docs.json
+    4) Run renderer.py to produce docs/ and documentation.pdf
+    5) Redirect to view_pdf() or back to index() with an error message
     """
     try:
         file = request.files.get("file")
@@ -72,12 +74,10 @@ def generate():
         file.save(upload_path)
         app.logger.info(f"Saved upload to {upload_path}")
 
-        # Run DocGen pipeline (generator + renderer)
-        # If you want to use the uploaded file/folder as input later,
-        # you can pass it via env or CLI args to docgen_cli.py.
-        app.logger.info("Running docgen_cli.py ...")
+        # Run DocGen pipeline (generator + renderer) with the uploaded file as input
+        app.logger.info("Running docgen_cli.py with uploaded file...")
         result = subprocess.run(
-            ["python", "docgen_cli.py"],
+            ["python", "docgen_cli.py", "--input", str(upload_path), "--out", "docs"],
             cwd=BASE_DIR,
             capture_output=True,
             text=True,

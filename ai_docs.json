@@ -77,5 +77,28 @@
       ],
       "mermaid": ""
     }
+  },
+  "test_simple": {
+    "chunk": {
+      "id": "test_simple",
+      "type": "file",
+      "name": "test_simple",
+      "args": [],
+      "docstring": "",
+      "source": "## AI Summary\n\nA file named test_simple.py.\n\n\n### Function: hello_world()\n\n**Description:** Return a greeting message.\n\n### Function: add_numbers(a, b)\n\n**Description:** Add two numbers together.\n\n## Class: Calculator\n\n**Description:** A simple calculator class.\n\n### Function: __init__(self)\n\n### Function: multiply(self, x, y)\n\n**Description:** Multiply two numbers and store in history.\n\n### Function: get_history(self)\n\n**Description:** Return calculation history.\n"
+    },
+    "doc": {
+      "title": "test_simple File",
+      "short_description": "A file named test_simple.",
+      "long_description": "This file performs operations related to test_simple. The implementation details can be found in the source code.",
+      "example_usage": "# Example usage would depend on the specific file",
+      "edge_cases": [
+        "General edge cases would depend on the specific implementation."
+      ],
+      "related": [
+        "Related elements would be identified in a real implementation."
+      ],
+      "mermaid": ""
+    }
   }
 }

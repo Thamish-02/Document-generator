@@ -18,14 +18,72 @@ from pathlib import Path
 def run_parsing_pipeline(input_path: Path, chunks_path: Path):
     """
     Hook into your existing parsing + chunking pipeline.
-
-    Right now this is a placeholder; you should connect it to your real code.
-    For now, we just check that chunks.json exists.
+    
+    This function will parse the input file and generate chunks for documentation.
     """
-    if not chunks_path.exists():
-        print(f"[ERROR] chunks.json not found at {chunks_path}")
-        print("Please run your parser/chunker pipeline first to generate chunks.json.")
+    import json
+    import sys
+    import os
+    
+    # Add src to path for imports
+    src_path = os.path.join(os.path.dirname(__file__), 'src')
+    if src_path not in sys.path:
+        sys.path.insert(0, src_path)
+    
+    try:
+        # Try direct import first
+        import parser
+        import traverse
+        from parser import parse_file
+        from traverse import traverse_directory
+    except ImportError:
+        try:
+            # Try relative import
+            from src import parser, traverse
+            from src.parser import parse_file
+            from src.traverse import traverse_directory
+        except ImportError:
+            print("[ERROR] Could not import parser modules")
+            sys.exit(1)
+    
+    # Parse the input file
+    if input_path.is_file():
+        print(f"Parsing file: {input_path}")
+        parse_file(str(input_path))
+    elif input_path.is_dir():
+        print(f"Parsing directory: {input_path}")
+        files_by_type = traverse_directory(str(input_path))
+        for file_list in files_by_type.values():
+            for file_path in file_list:
+                parse_file(file_path)
+    else:
+        print(f"[ERROR] Input path does not exist: {input_path}")
         sys.exit(1)
+    
+    # Generate chunks from parsed files
+    chunks = []
+    docs_generated_dir = Path("docs/generated")
+    if docs_generated_dir.exists():
+        for md_file in docs_generated_dir.iterdir():
+            if md_file.suffix == ".md":
+                with open(md_file, "r", encoding="utf-8") as f:
+                    content = f.read()
+                # Create a simple chunk for the file
+                chunk = {
+                    "id": md_file.stem,
+                    "type": "file",
+                    "name": md_file.stem,
+                    "args": [],
+                    "docstring": "",
+                    "source": content
+                }
+                chunks.append(chunk)
+    
+    # Save chunks to chunks.json
+    with open(chunks_path, "w", encoding="utf-8") as f:
+        json.dump(chunks, f, indent=2, ensure_ascii=False)
+    
+    print(f"Generated {len(chunks)} chunks")
 
 def main():
     parser = argparse.ArgumentParser(
